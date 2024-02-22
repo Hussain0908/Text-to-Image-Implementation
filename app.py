@@ -1,5 +1,4 @@
 import tkinter as tk
-import customtkinter as ctk
 
 from PIL import ImageTk
 from hug_token import auth_token
@@ -9,32 +8,28 @@ from torch import autocast
 from diffusers import StableDiffusionPipeline
 
 app = tk.Tk()
-app.geometry("532x632")
-app.title("Image Generation")
-ctk.set_appearance_mode("dark")
+app.geometry("600x700")
+app.title("🎨 Creative Image Generator 🖼️")
 
-prompt = ctk.CTkEntry(master=None, height=40, width=512, font=("Arial", 20), text_color="black", fg_color="white")
-prompt.place(x=10, y=10)
+def gen():
+        with autocast(gpu):
+            image = pipeline(prompt.get(), guidance_scale=8.5)["sample"][0]
+        image.save("genimage.png")
+        img = ImageTk.PhotoImage(image)
+        frame.configure(image=img)
 
-frame = ctk.CTkLabel(master=None, height=512, width=512)
-frame.place(x=10, y=110)
+prompt = tk.Entry(app, width=50, font=("Arial", 16))
+prompt.place(x=30, y=20)
+
+frame = tk.Label(app, height=400, width=500)
+frame.place(x=50, y=100)
+
+button = tk.Button(app, text="Generate", width=20, font=("Arial", 16), bg="orange", fg="white", command=gen)
+button.place(x=220, y=60)
 
 gpu = "cuda"
 modelid = "CompVis/stable-diffusion-v1-4"
 pipeline = StableDiffusionPipeline.from_pretrained(modelid, variant="fp16", torch_dtype=torch.float16, use_token=auth_token)
 pipeline.to(gpu)
-
-def gen():
-    with autocast(gpu):
-        image = pipeline(prompt.get(), guidance_scale=8.5)["sample"][0]
-
-    image.save("genimage.png")
-    img = ImageTk.PhotoImage(image)
-    frame.configure(image=img)
-
-button = ctk.CTkButton(master=None, height=20, width=120, font=("Arial", 20), text_color="white", fg_color="red", command=gen)
-button.configure(text="Generate")
-button.place(x=206, y=60)
-
 
 app.mainloop()
