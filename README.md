@@ -9,6 +9,6 @@ This application requires a graphics card which has at least 4gb of VRAM. The gr
 
 Other dependencies include pytorch, PILLOW, & tkinter.
 
-
+All credit goes towards Nicholas Renotte, from Youtube, for the code provided. This application was edited for personal use.
 
 
